@@ -25,7 +25,6 @@ use SilverStripe\View\ThemeResourceLoader;
  */
 class Slice extends DataObject
 {
-
     /**
      * @var array
      */
@@ -190,24 +189,6 @@ class Slice extends DataObject
         $tab = $fields->findOrMakeTab('Root.Main');
         $firstField = $tab->getChildren()->first() ? $tab->getChildren()->first()->getName() : null;
 
-        // Add the slice preview at the top of the tab TODO update DataObjectPreviewer package
-//        try {
-//            $this->getTemplateList();
-//            $fields->addFieldToTab(
-//                'Root.Main',
-//                new DataObjectPreviewField(
-//                    'Slice',
-//                    $this,
-//                    $this->previewer
-//                ),
-//                $firstField
-//            );
-//        } catch (Exception $e) {
-//            $fields->addFieldToTab('Root.Main', new LiteralField('Slice',
-//                '<div class="message error"><strong>Unable to render slice preview:</strong> ' . htmlentities($e->getMessage()) . '</div>'
-//            ), $firstField);
-//        }
-
         // Template selection
         $fields->addFieldToTab(
             'Root.Main',
@@ -336,16 +317,6 @@ class Slice extends DataObject
     }
 
     /**
-     * Used in templates to get a iframe preview of the slice
-     *
-     * @return string
-     */
-    public function getPreview()
-    {
-        return $this->previewer->preview($this);
-    }
-
-    /**
      * Render the slice
      *
      * @return DBHTMLText
@@ -403,17 +374,22 @@ class Slice extends DataObject
      */
     protected function getTemplateList()
     {
-        $templates = ThemeResourceLoader::inst()->findTemplate(
-            $tryTemplates = $this->getTemplateSearchNames(), Config::inst()->get('SilverStripe\View\SSViewer', 'theme')
+        $themes = SSViewer::get_themes();
+        if (($key = array_search('$default', $themes)) !== false) {
+            unset($themes[$key]);
+        }
+        $tryTemplates = $this->getTemplateSearchNames();
+        $template = ThemeResourceLoader::inst()->findTemplate(
+            $tryTemplates, $themes
         );
 
-        if (!$templates) {
+        if (!$template) {
             throw new \Exception(
                 'Can\'t find a template from list: "' . implode('", "', $tryTemplates) . '"'
             );
         }
 
-        return reset($templates);
+        return [$template];
     }
 
     /**
