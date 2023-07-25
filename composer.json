@@ -27,7 +27,7 @@
         "silverstripe/campaign-admin": "*",
         "silverstripe/versioned-admin": "*",
         "silverstripe/errorpage": "*",
-        "silverstripe/graphql": "^5.0",
+        "silverstripe/graphql": "*",
         "silverstripe/reports": "*",
         "silverstripe/siteconfig": "*",
         "silverstripe/versioned": "*"
